@@ -1,6 +1,7 @@
 # Traffic Hand
 
 Nhận diện động tác cánh tay để điều khiển đèn giao thông.
+
 Dự án này là bài tập môn DSS301, của nhóm G2. Chương trình có sử dụng & tham khảo tài nguyên từ vài nguồn khác nhau.
 
 ## Công nghệ
