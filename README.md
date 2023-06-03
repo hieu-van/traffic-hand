@@ -1,7 +1,7 @@
 # Traffic Hand
 
-Bài tập môn DSS301.
-Dự án có sử dụng tài nguyên từ vài nguồn khác nhau.
+Nhận diện động tác cánh tay để điều khiển đèn giao thông.
+Dự án này là bài tập môn DSS301, của nhóm G2. Chương trình có sử dụng & tham khảo tài nguyên từ vài nguồn khác nhau.
 
 ## Công nghệ
 ### Web
@@ -15,5 +15,14 @@ Dự án có sử dụng tài nguyên từ vài nguồn khác nhau.
 - Node 18+
 
 ## Cách dùng
+
+### Chạy web app
 1. `npm install`
 2. `node app.js` hoặc `nodemon`
+
+### Làm gì trước cam bây h?
+
+Có 3 động tác cánh tay tương ứng với từng tín hiệu đèn giao thông. Lưu ý là chúng ta chỉ dùng cánh tay **phải**.
+- Đèn đỏ: Tay giơ cao lên giời
+- Đèn xanh: Tay dang ngang bờ vai
+- Đèn vàng: Bắp tay vuông góc với cẳng tay (chứ kp tay song song trước mặt đâu)

@@ -14,5 +14,5 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 
 app.listen(42069, () => {
-	console.log('Máy chủ đang chạy…')
+	console.log('Máy chủ đang chạy… Vào link này mà thử đi: http://localhost:42069')
 })
