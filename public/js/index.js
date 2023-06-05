@@ -111,17 +111,17 @@ function straight(direction, threshold, ...points) {
  */
 function determinePose(landmarks) {
 	// Đèn đỏ:
-	// Xét các điểm 11, 13, 15 có nằm dọc, gần thẳng hàng với nhau không, và 15 có phải cao nhất không 
+	// Xét các điểm 12, 14, 16 có nằm dọc, gần thẳng hàng với nhau không, và 16 có phải cao nhất không 
 	const redLightPose = straight(0, 0.1, landmarks[12], landmarks[14], landmarks[16]) && landmarks[16].y < landmarks[12].y
 	if (redLightPose) return 0
 
 	// Đèn vàng:
-	// Xét các điểm 11, 13, 15 có tạo thành góc vuông không (vuông tại 13)
+	// Xét các điểm 12, 14, 16 có tạo thành góc vuông không (vuông tại 13)
 	const yellowLightPose = straight(1, 0.05, landmarks[12], landmarks[14]) && straight(0, 0.05, landmarks[14], landmarks[16])
 	if (yellowLightPose) return 1
 
 	// Đèn xanh:
-	// Xét các điểm 11, 13, 15 có nằm ngang, gần thẳng hàng với nhau không
+	// Xét các điểm 12, 14, 16 có nằm ngang, gần thẳng hàng với nhau không
 	const greenLightPose = straight(1, 0.1, landmarks[12], landmarks[14], landmarks[16])
 	if (greenLightPose) return 2
 
@@ -143,11 +143,11 @@ function drawResult(result) {
 				radius: 2,
 				color: (data) => {
 					switch (data.index) {
-						case 11:	// Khớp vai phải
+						case 12:	// Khớp vai phải
 							return 'red'
-						case 13:	// Khuỷu tay phải
+						case 14:	// Khuỷu tay phải
 							return 'green'
-						case 15:	// Cổ tay phải
+						case 16:	// Cổ tay phải
 							return 'blue'
 						default:
 							return 'white'
