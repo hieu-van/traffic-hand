@@ -1,39 +1,28 @@
-import {
-	PoseLandmarker,
-	FilesetResolver,
-	DrawingUtils
-} from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0";
-
 const video = document.getElementById("webcam")
 const canvasElement = document.getElementById("pose-canvas")
 const trafficLightImg = document.getElementById("traffic-light-img")
 
-let poseLandmarker;
-const runningMode = "VIDEO";
 const videoHeight = "360px";
 const videoWidth = "480px";
 
-async function createPoseLandmarker() {
-	const vision = await FilesetResolver.forVisionTasks(
-		"https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
-	);
-	poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
-		baseOptions: {
-			modelAssetPath: '../assets/pose_landmarker_full.task',
-			delegate: "GPU"
-		},
-		runningMode: runningMode,
-	});
-};
+let detector
 
-createPoseLandmarker();
+// Create a detector
+async function createDetector() {
+	detector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, {
+		modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
+		modelUrl: '../assets/pose_classifier.tflite',
+		enableTracking: true
+	});
+}
+
+createDetector()
 
 /****************
  * Xử lý webcam *
  ****************/
 
-const canvasCtx = canvasElement.getContext("2d");
-const drawingUtils = new DrawingUtils(canvasCtx);
+let renderer = new RendererCanvas2d(canvasElement);
 
 // Máy người dùng có webcam không
 const hasGetUserMedia = () => navigator.mediaDevices.getUserMedia;
@@ -49,14 +38,14 @@ if (hasGetUserMedia()) {
 let webcamActive = false
 
 function enableCam(event) {
-	if (! poseLandmarker) {
-		alert("Đang load model. Chờ chút");
+	if (! detector) {
+		alert("Đang load engine. Chờ chút");
 		return;
 	}
 
 	if (webcamActive == false) {
 		webcamActive = true
-		webcamButton.innerHTML = 'Các em ko được tắt cam nhé'
+		webcamButton.innerHTML = 'Tắt webcam'
 		webcamButton.classList.replace('btn-primary', 'btn-danger')
 
 		navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
@@ -65,7 +54,7 @@ function enableCam(event) {
 		})
 	} else {
 		webcamActive = false
-		webcamButton.innerHTML = 'Bật lại cam đi các em'
+		webcamButton.innerHTML = 'Bật webcam'
 		webcamButton.classList.replace('btn-danger', 'btn-primary')
 
 		video.srcObject = null
@@ -110,19 +99,24 @@ function straight(direction, threshold, ...points) {
  * - -1: Không rõ
  */
 function determinePose(landmarks) {
+	// Tìm điểm
+	const p6 = landmarks.find(v => v.name == 'right_shoulder')
+	const p8 = landmarks.find(v => v.name == 'right_elbow')
+	const p10 = landmarks.find(v => v.name == 'right_wrist')
+
 	// Đèn đỏ:
-	// Xét các điểm 11, 13, 15 có nằm dọc, gần thẳng hàng với nhau không, và 15 có phải cao nhất không 
-	const redLightPose = straight(0, 0.1, landmarks[12], landmarks[14], landmarks[16]) && landmarks[16].y < landmarks[12].y
+	// Xét các điểm 6, 8, 10 có nằm dọc, gần thẳng hàng với nhau không, và 10 có phải cao nhất không 
+	const redLightPose = straight(0, 0.1, p6, p8, p10) && p10.y < p6.y
 	if (redLightPose) return 0
 
 	// Đèn vàng:
-	// Xét các điểm 11, 13, 15 có tạo thành góc vuông không (vuông tại 13)
-	const yellowLightPose = straight(1, 0.05, landmarks[12], landmarks[14]) && straight(0, 0.05, landmarks[14], landmarks[16])
+	// Xét các điểm 6, 8, 10 có tạo thành góc vuông không (vuông tại 8)
+	const yellowLightPose = straight(1, 0.05, p6, p8) && straight(0, 0.05, p8, p10)
 	if (yellowLightPose) return 1
 
 	// Đèn xanh:
-	// Xét các điểm 11, 13, 15 có nằm ngang, gần thẳng hàng với nhau không
-	const greenLightPose = straight(1, 0.1, landmarks[12], landmarks[14], landmarks[16])
+	// Xét các điểm 6, 8, 10 có nằm ngang, gần thẳng hàng với nhau không
+	const greenLightPose = straight(1, 0.1, p6, p8, p10)
 	if (greenLightPose) return 2
 
 	return -1
@@ -183,11 +177,13 @@ async function analyzePose() {
 	if (lastVideoTime !== video.currentTime) {
 		lastVideoTime = video.currentTime;
 
-		poseLandmarker.detectForVideo(video, startTimeMs, (result) => {
-			drawResult(result)
+		detector.estimatePoses(video, { maxPoses: 1, flipHorizontal: false }, startTimeMs, (result) => {
+			const rendererParams = [camera.video, poses, true];
+			renderer.draw(rendererParams);
 
-			if (result.landmarks.length > 0) {
-				const light = determinePose(result.landmarks[0])
+			if (result.length > 0) {
+				const normalizedKeypoints = detector.calculators.keypointsToNormalizedKeypoints(result[0].keypoints, video)
+				const light = determinePose(normalizedKeypoints)
 
 				switch (light) {
 					case 0:
