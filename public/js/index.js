@@ -137,11 +137,11 @@ function drawResult(result) {
 				radius: 2,
 				color: (data) => {
 					switch (data.index) {
-						case 12:
+						case 12:	// Khớp vai phải
 							return 'red'
-						case 14:
+						case 14:	// Khuỷu tay phải
 							return 'green'
-						case 16:
+						case 16:	// Cổ tay phải
 							return 'blue'
 						default:
 							return 'white'
