@@ -11,3 +11,20 @@ canvas {
 	-webkit-transform: rotateY(180deg);
 	-moz-transform: rotateY(180deg);
 }
+
+#stats {
+	position: relative;
+	width: 100%;
+	height: 80px;
+}
+
+#main {
+	position: relative;
+	margin: 0;
+}
+
+#canvas-wrapper,
+
+#scatter-gl-container {
+	position: relative;
+}

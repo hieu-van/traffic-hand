@@ -1,3 +1,10 @@
+import * as posedetection from '@tensorflow-models/pose-detection';
+import * as scatter from 'scatter-gl';
+
+import * as params from './params';
+
+// These anchor points allow the pose pointcloud to resize according to its
+// position in the input.
 const ANCHOR_POINTS = [[0, 0, 0], [0, 1, 0], [-1, 0, 0], [-1, -1, 0]];
 
 const COLOR_PALETTE = [
@@ -5,7 +12,6 @@ const COLOR_PALETTE = [
 	'#9a6324', '#000075', '#f58231', '#4363d8', '#ffd8b1', '#dcbeff', '#808000',
 	'#ffe119', '#911eb4', '#bfef45', '#f032e6', '#3cb44b', '#a9a9a9'
 ];
-
 export class RendererCanvas2d {
 	constructor(canvas) {
 		this.ctx = canvas.getContext('2d');
