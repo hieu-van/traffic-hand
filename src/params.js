@@ -1,4 +1,5 @@
 import * as posedetection from '@tensorflow-models/pose-detection';
+import { isiOS } from './util';
 
 export const DEFAULT_LINE_WIDTH = 2;
 export const DEFAULT_RADIUS = 4;
@@ -8,26 +9,29 @@ export const VIDEO_SIZE = {
 	'640 X 360': {width: 640, height: 360},
 	'360 X 270': {width: 360, height: 270}
 };
-
 export const STATE = {
-	camera: { targetFPS: 60, sizeOption: '640 X 480' },
-	backend: 'tfjs-webgl',
+	camera: {targetFPS: 60, sizeOption: '640 X 480'},
+	backend: '',
 	flags: {},
-	model: posedetection.SupportedModels.MoveNet,
-	modelConfig: {
-		type: 'thunder'
-	}
+	modelConfig: {}
 };
-
-
+export const BLAZEPOSE_CONFIG = {
+	maxPoses: 1,
+	type: 'full',
+	scoreThreshold: 0.65,
+	render3D: true
+};
+export const POSENET_CONFIG = {
+	maxPoses: 1,
+	scoreThreshold: 0.5
+};
 export const MOVENET_CONFIG = {
 	maxPoses: 1,
 	type: 'thunder',
 	scoreThreshold: 0.3,
-	customModel: '../assets/model.json',
-	enableTracking: true
+	customModel: '',
+	enableTracking: false
 };
-
 /**
  * This map descripes tunable flags and theior corresponding types.
  *
@@ -54,14 +58,11 @@ export const TUNABLE_FLAG_VALUE_RANGE_MAP = {
 };
 
 export const BACKEND_FLAGS_MAP = {
-	['tfjs-wasm']: ['WASM_HAS_SIMD_SUPPORT', 'WASM_HAS_MULTITHREAD_SUPPORT'],
 	['tfjs-webgl']: [
 		'WEBGL_VERSION', 'WEBGL_CPU_FORWARD', 'WEBGL_PACK',
 		'WEBGL_FORCE_F16_TEXTURES', 'WEBGL_RENDER_FLOAT32_CAPABLE',
 		'WEBGL_FLUSH_THRESHOLD'
 	],
-	['tfjs-webgpu']: [],
-	['mediapipe-gpu']: []
 };
 
 export const MODEL_BACKEND_MAP = {

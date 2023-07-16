@@ -1,45 +1,34 @@
 import '@tensorflow/tfjs-backend-webgl';
+
 import * as posedetection from '@tensorflow-models/pose-detection';
 
 import { Camera } from './camera';
 import { RendererCanvas2d } from './renderer_canvas2d';
-// import { setupDatGui } from './option_panel';
+import { setupDatGui } from './option_panel';
 import { STATE } from './params';
 import { setupStats } from './stats_panel';
 import { setBackendAndEnvFlags } from './util';
+import { switchLight } from './gestureProcessor'
 
 let detector, camera, stats;
 let startInferenceTime, numInferences = 0;
 let inferenceTimeSum = 0, lastPanelUpdate = 0;
 let rafId;
 let renderer = null;
-let useGpuRenderer = false;
 
 async function createDetector() {
-	switch (STATE.model) {
-		case posedetection.SupportedModels.MoveNet:
-			let modelType;
+	modelType = posedetection.movenet.modelType.SINGLEPOSE_THUNDER;
+	const modelConfig = {modelType};
 
-			if (STATE.modelConfig.type == 'lightning') {
-				modelType = posedetection.movenet.modelType.SINGLEPOSE_LIGHTNING;
-			} else if (STATE.modelConfig.type == 'thunder') {
-				modelType = posedetection.movenet.modelType.SINGLEPOSE_THUNDER;
-			} else if (STATE.modelConfig.type == 'multipose') {
-				modelType = posedetection.movenet.modelType.MULTIPOSE_LIGHTNING;
-			}
-
-			const modelConfig = { modelType };
-
-			if (STATE.modelConfig.customModel !== '') {
-				modelConfig.modelUrl = STATE.modelConfig.customModel;
-			}
-
-			if (STATE.modelConfig.type === 'multipose') {
-				modelConfig.enableTracking = STATE.modelConfig.enableTracking;
-			}
-
-			return posedetection.createDetector(STATE.model, modelConfig);
+	if (STATE.modelConfig.customModel !== '') {
+		modelConfig.modelUrl = STATE.modelConfig.customModel;
 	}
+
+	if (STATE.modelConfig.type === 'multipose') {
+		modelConfig.enableTracking = STATE.modelConfig.enableTracking;
+	}
+
+	return posedetection.createDetector(STATE.model, modelConfig);
 }
 
 async function checkGuiUpdate() {
@@ -85,12 +74,12 @@ function endEstimatePosesStats() {
 	++numInferences;
 
 	const panelUpdateMilliseconds = 1000;
-
 	if (endInferenceTime - lastPanelUpdate >= panelUpdateMilliseconds) {
 		const averageInferenceTime = inferenceTimeSum / numInferences;
 		inferenceTimeSum = 0;
 		numInferences = 0;
-		stats.customFpsPanel.update(1000.0 / averageInferenceTime, 120);
+		stats.customFpsPanel.update(
+				1000.0 / averageInferenceTime, 120 /* maxValue */);
 		lastPanelUpdate = endInferenceTime;
 	}
 }
@@ -105,7 +94,6 @@ async function renderResult() {
 	}
 
 	let poses = null;
-	let canvasInfo = null;
 
 	// Detector can be null if initialization failed (for example when loading
 	// from a URL that does not exist).
@@ -115,21 +103,8 @@ async function renderResult() {
 
 		// Detectors can throw errors, for example when using custom URLs that
 		// contain a model that doesn't provide the expected output.
-
 		try {
-			if (useGpuRenderer) {
-				const [posesTemp, canvasInfoTemp] = await detector.estimatePosesGPU(
-						camera.video,
-						{ maxPoses: STATE.modelConfig.maxPoses, flipHorizontal: false },
-						true
-					);
-				poses = posesTemp;
-				canvasInfo = canvasInfoTemp;
-			} else {
-				poses = await detector.estimatePoses(
-						camera.video,
-						{ maxPoses: STATE.modelConfig.maxPoses, flipHorizontal: false });
-			}
+			poses = await detector.estimatePoses(camera.video, { maxPoses: STATE.modelConfig.maxPoses, flipHorizontal: false });
 		} catch (error) {
 			detector.dispose();
 			detector = null;
@@ -139,11 +114,9 @@ async function renderResult() {
 		endEstimatePosesStats();
 	}
 
-	const rendererParams = useGpuRenderer ?
-			[camera.video, poses, canvasInfo, STATE.modelConfig.scoreThreshold] :
-			[camera.video, poses, STATE.isModelChanged];
-
+	const rendererParams = [camera.video, poses, STATE.isModelChanged];
 	renderer.draw(rendererParams);
+	switchLight(camera.video, poses)
 }
 
 async function renderPrediction() {
@@ -157,14 +130,15 @@ async function renderPrediction() {
 };
 
 async function app() {
-	// const urlParams = new URLSearchParams(window.location.search);
+	// Gui content will change depending on which model is in the query string.
+	const urlParams = new URLSearchParams(window.location.search);
 
-	// if (! urlParams.has('model')) {
-	// 	alert('Cannot find model in the query string.');
-	// 	return;
-	// }
+	if (! urlParams.has('model')) {
+		alert('Cannot find model in the query string.');
+		return;
+	}
 
-	// await setupDatGui(urlParams);
+	await setupDatGui(urlParams);
 
 	stats = setupStats();
 
@@ -174,7 +148,8 @@ async function app() {
 
 	detector = await createDetector();
 
-	const canvas = document.getElementById('canvas');
+	const canvas = document.getElementById('output');
+
 	canvas.width = camera.video.width;
 	canvas.height = camera.video.height;
 
@@ -184,7 +159,3 @@ async function app() {
 };
 
 app();
-
-if (useGpuRenderer) {
-	renderer.dispose();
-}

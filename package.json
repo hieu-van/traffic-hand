@@ -5,14 +5,17 @@
   "dependencies": {
     "@mediapipe/pose": "^0.5.1675469404",
     "@tensorflow-models/pose-detection": "^2.1.0",
+    "@tensorflow/tfjs-backend-wasm": "^4.8.0",
     "@tensorflow/tfjs-backend-webgl": "^4.8.0",
     "@tensorflow/tfjs-converter": "^4.8.0",
     "@tensorflow/tfjs-core": "^4.8.0",
+    "dat.gui": "^0.7.9",
     "scatter-gl": "^0.0.13",
     "three": "^0.154.0"
   },
   "scripts": {
-    "start": "parcel src/index.html"
+    "start": "npx parcel src/index.html",
+    "build": "npx parcel build src/index.html"
   },
   "repository": {
     "type": "git",
@@ -21,7 +24,9 @@
   "author": "Hieu Van",
   "license": "UNLICENSED",
   "devDependencies": {
+    "@types/dat.gui": "^0.7.10",
     "buffer": "^6.0.3",
+    "copy-webpack-plugin": "^11.0.0",
     "process": "^0.11.10"
   }
 }

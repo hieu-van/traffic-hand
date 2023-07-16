@@ -1,3 +1,19 @@
+/**
+ * @license
+ * Copyright 2023 Google LLC.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =============================================================================
+ */
 import * as posedetection from '@tensorflow-models/pose-detection';
 import * as scatter from 'scatter-gl';
 
@@ -7,6 +23,26 @@ import * as params from './params';
 // position in the input.
 const ANCHOR_POINTS = [[0, 0, 0], [0, 1, 0], [-1, 0, 0], [-1, -1, 0]];
 
+// #ffffff - White
+// #800000 - Maroon
+// #469990 - Malachite
+// #e6194b - Crimson
+// #42d4f4 - Picton Blue
+// #fabed4 - Cupid
+// #aaffc3 - Mint Green
+// #9a6324 - Kumera
+// #000075 - Navy Blue
+// #f58231 - Jaffa
+// #4363d8 - Royal Blue
+// #ffd8b1 - Caramel
+// #dcbeff - Mauve
+// #808000 - Olive
+// #ffe119 - Candlelight
+// #911eb4 - Seance
+// #bfef45 - Inchworm
+// #f032e6 - Razzle Dazzle Rose
+// #3cb44b - Chateau Green
+// #a9a9a9 - Silver Chalice
 const COLOR_PALETTE = [
 	'#ffffff', '#800000', '#469990', '#e6194b', '#42d4f4', '#fabed4', '#aaffc3',
 	'#9a6324', '#000075', '#f58231', '#4363d8', '#ffd8b1', '#dcbeff', '#808000',

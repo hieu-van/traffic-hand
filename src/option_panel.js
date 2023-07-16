@@ -1,5 +1,6 @@
 import * as posedetection from '@tensorflow-models/pose-detection';
 import * as tf from '@tensorflow/tfjs-core';
+import * as dat from 'dat.gui'
 
 import * as params from './params';
 
@@ -40,9 +41,19 @@ export async function setupDatGui(urlParams) {
 	const backendFromURL = urlParams.get('backend');
 
 	switch (model) {
+		case 'posenet':
+			params.STATE.model = posedetection.SupportedModels.PoseNet;
+			break;
 		case 'movenet':
 			params.STATE.model = posedetection.SupportedModels.MoveNet;
 			if (type !== 'lightning' && type !== 'thunder' && type !== 'multipose') {
+				// Nulify invalid value.
+				type = null;
+			}
+			break;
+		case 'blazepose':
+			params.STATE.model = posedetection.SupportedModels.BlazePose;
+			if (type !== 'full' && type !== 'lite' && type !== 'heavy') {
 				// Nulify invalid value.
 				type = null;
 			}
@@ -52,7 +63,8 @@ export async function setupDatGui(urlParams) {
 			break;
 	}
 
-	const modelController = modelFolder.add(params.STATE, 'model', Object.values(posedetection.SupportedModels));
+	const modelController = modelFolder.add(
+			params.STATE, 'model', Object.values(posedetection.SupportedModels));
 
 	modelController.onChange(_ => {
 		params.STATE.isModelChanged = true;
@@ -126,11 +138,20 @@ function showModelConfigs(folderController, type) {
 	}
 }
 
+// The PoseNet model config folder contains options for PoseNet config
+// settings.
+function addPoseNetControllers(modelConfigFolder) {
+	params.STATE.modelConfig = {...params.POSENET_CONFIG};
+
+	modelConfigFolder.add(params.STATE.modelConfig, 'maxPoses', [1, 2, 3, 4, 5]);
+	modelConfigFolder.add(params.STATE.modelConfig, 'scoreThreshold', 0, 1);
+}
+
 // The MoveNet model config folder contains options for MoveNet config
 // settings.
 function addMoveNetControllers(modelConfigFolder, type) {
 	params.STATE.modelConfig = {...params.MOVENET_CONFIG};
-	params.STATE.modelConfig.type = type != null ? type : 'lightning';
+	params.STATE.modelConfig.type = type != null ? type : 'thunder';
 
 	// Set multipose defaults on initial page load.
 	if (params.STATE.modelConfig.type === 'multipose') {
@@ -176,6 +197,30 @@ function addMoveNetControllers(modelConfigFolder, type) {
 		// changing models.
 		params.STATE.isModelChanged = true;
 	})
+}
+
+// The BlazePose model config folder contains options for BlazePose config
+// settings.
+function addBlazePoseControllers(modelConfigFolder, type) {
+	params.STATE.modelConfig = {...params.BLAZEPOSE_CONFIG};
+	params.STATE.modelConfig.type = type != null ? type : 'full';
+
+	const typeController = modelConfigFolder.add(
+			params.STATE.modelConfig, 'type', ['lite', 'full', 'heavy']);
+	typeController.onChange(_ => {
+		// Set isModelChanged to true, so that we don't render any result during
+		// changing models.
+		params.STATE.isModelChanged = true;
+	});
+
+	modelConfigFolder.add(params.STATE.modelConfig, 'scoreThreshold', 0, 1);
+
+	const render3DController =
+			modelConfigFolder.add(params.STATE.modelConfig, 'render3D');
+	render3DController.onChange(render3D => {
+		document.querySelector('#scatter-gl-container').style.display =
+				render3D ? 'inline-block' : 'none';
+	});
 }
 
 /**
