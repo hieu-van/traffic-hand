@@ -29,7 +29,8 @@ export const MOVENET_CONFIG = {
 	maxPoses: 1,
 	type: 'thunder',
 	scoreThreshold: 0.3,
-	customModel: '/assets/model.json',
+	// customModel: '/assets/tf_model/model.json',
+	customModel: '',
 	enableTracking: false
 };
 /**
