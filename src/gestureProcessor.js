@@ -70,16 +70,16 @@ export function switchLight(video, results) {
 
         switch (light) {
             case 0:
-                trafficLightImg.src = './img/traffic-light-red.jpg'
+                trafficLightImg.src = 'assets/img/traffic-light-red.jpg'
                 break
             case 1:
-                trafficLightImg.src = './img/traffic-light-yellow.jpg'
+                trafficLightImg.src = 'assets/img/traffic-light-yellow.jpg'
                 break
             case 2:
-                trafficLightImg.src = './img/traffic-light-green.jpg'
+                trafficLightImg.src = 'assets/img/traffic-light-green.jpg'
                 break
             default:
-                trafficLightImg.src = './img/pepe-question.png'
+                trafficLightImg.src = 'assets/img/pepe-question.png'
         }
     }
 }

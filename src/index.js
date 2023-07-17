@@ -17,7 +17,7 @@ let rafId;
 let renderer = null;
 
 async function createDetector() {
-	modelType = posedetection.movenet.modelType.SINGLEPOSE_THUNDER;
+	let modelType = posedetection.movenet.modelType.SINGLEPOSE_THUNDER;
 	const modelConfig = {modelType};
 
 	if (STATE.modelConfig.customModel !== '') {

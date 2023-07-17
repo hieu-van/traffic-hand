@@ -10,12 +10,14 @@
     "@tensorflow/tfjs-converter": "^4.8.0",
     "@tensorflow/tfjs-core": "^4.8.0",
     "dat.gui": "^0.7.9",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0",
     "scatter-gl": "^0.0.13",
     "three": "^0.154.0"
   },
   "scripts": {
-    "start": "npx parcel src/index.html",
-    "build": "npx parcel build src/index.html"
+    "start": "node app.js",
+    "build": "webpack --progress"
   },
   "repository": {
     "type": "git",
