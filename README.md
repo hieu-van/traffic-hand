@@ -9,9 +9,6 @@ Dự án này là bài tập môn DSS301, của nhóm G2. Chương trình có s�
 - Node.
 - Bootstrap.
 
-### AI/ML
-- MediaPipe.
-
 ## Yêu cầu
 - Node 18+.
 
