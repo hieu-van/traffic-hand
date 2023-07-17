@@ -45,7 +45,7 @@ function determinePose(landmarks) {
 
 	// Đèn đỏ:
 	// Xét các điểm 6, 8, 10 có nằm dọc, gần thẳng hàng với nhau không, và 10 có phải cao nhất không
-	const redLightPose = straight(0, 0.1, p6, p8, p10) && p10.y < p6.y
+	const redLightPose = straight(0, 0.05, p6, p8, p10) && p10.y < p6.y
 	if (redLightPose) return 0
 
 	// Đèn vàng:
